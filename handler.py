@@ -10,8 +10,7 @@ from telegram.ext import ContextTypes
 from telegram.ext import MessageHandler
 from telegram.ext import filters
 
-redis_pool = ConnectionPool.from_url(os.environ["REDIS_DSN"])
-redis = Redis(connection_pool=redis_pool)
+redis = Redis.from_url(os.environ["REDIS_DSN"])
 
 application = (
     Application.builder().token(os.environ["TELEGRAM_TOKEN"]).updater(None).build()
