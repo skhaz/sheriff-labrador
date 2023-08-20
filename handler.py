@@ -19,14 +19,14 @@ application = (
 
 
 async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    n = await redis.incr("temp")
-    await update.message.reply_text(f"Hi {n}!")
+    await update.message.reply_text("Hi!")
     # set redis key
     # send captcha
 
 
 async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Catch it")
+    n = await redis.incr("temp")
+    await update.message.reply_text(f">>> {n}!")
     # look on redis, if present, delete any message
 
 
