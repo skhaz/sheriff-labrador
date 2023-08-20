@@ -57,7 +57,7 @@ def telegram(event, context):
 
     loop.run_until_complete(
         application.update_queue.put(
-            Update.de_json(data=json.loads(event["body"], bot=application.bot))
+            Update.de_json(data=json.loads(event["body"]), bot=application.bot)
         )
     )
 
