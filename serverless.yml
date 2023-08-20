@@ -1,0 +1,25 @@
+service: sheriff-labrador-captcha
+
+frameworkVersion: "3"
+
+configValidationMode: error
+
+provider:
+  name: aws
+  region: us-east-1
+  runtime: python3.10
+  architecture: arm64
+  stage: development
+
+functions:
+  telegram:
+    handler: handler.telegram
+    environment:
+      REDIS_DSN: ${env:REDIS_DSN}
+      TOKEN: ${env:TOKEN}
+      WORD: ${env:WORD}
+    events:
+      - http: POST /webhook
+
+plugins:
+  - serverless-python-requirements
