@@ -18,11 +18,21 @@ application = (
 )
 
 
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("Hi!")
+
+
+async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(update.message.text)
 
 
-application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("Bye")
+
+
+application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, on_enter))
+application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, on_message))
+application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, on_leave))
 
 
 async def main(event):
