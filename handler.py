@@ -3,7 +3,7 @@ import json
 import os
 
 from redis import ConnectionPool
-from redis import Redis
+from redis.asyncio import Redis
 from telegram import Update
 from telegram.ext import Application
 from telegram.ext import ContextTypes
@@ -19,7 +19,8 @@ application = (
 
 
 async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text("Hi!")
+    n = await redis.incr("temp")
+    await update.message.reply_text(f"Hi {n}!")
     # set redis key
     # send captcha
 
@@ -35,7 +36,7 @@ async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, on_enter))
-application.add_handler(MessageHandler(filters.CHAT & ~filters.COMMAND, on_message))
+application.add_handler(MessageHandler(filters.CHAT, on_message))
 application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, on_leave))
 
 
