@@ -20,18 +20,22 @@ application = (
 
 async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Hi!")
+    # set redis key
+    # send captcha
 
 
 async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text(update.message.text)
+    await update.message.reply_text("Catch it")
+    # look on redis, if present, delete any message
 
 
 async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Bye")
+    # remove the key from redis
 
 
 application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, on_enter))
-application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, on_message))
+application.add_handler(MessageHandler(filters.CHAT & ~filters.COMMAND, on_message))
 application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, on_leave))
 
 
