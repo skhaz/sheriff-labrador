@@ -53,7 +53,7 @@ application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
 
 def telegram(event, context):
-    loop = asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
 
     loop.run_until_complete(
         application.update_queue.put(
