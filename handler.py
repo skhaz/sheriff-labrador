@@ -47,7 +47,7 @@ async def main(event):
 
 
 def telegram(event, context):
-    asyncio.run(main(event))
+    asyncio.get_event_loop().run_until_complete((event))
 
     return {
         "statusCode": 200,
