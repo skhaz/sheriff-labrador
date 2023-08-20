@@ -16,8 +16,7 @@ functions:
     handler: handler.telegram
     environment:
       REDIS_DSN: ${env:REDIS_DSN}
-      TOKEN: ${env:TOKEN}
-      WORD: ${env:WORD}
+      TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
     events:
       - http: POST /webhook
 
