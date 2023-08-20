@@ -52,16 +52,14 @@ async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
 
 
-def telegram(event, context):
-    loop = asyncio.new_event_loop()
-
-    loop.run_until_complete(
-        application.update_queue.put(
-            Update.de_json(data=json.loads(event["body"]), bot=application.bot)
+async def main(event):
+    async with application:
+        await application.process_update(
+            Update.de_json(json.loads(event["body"]), application.bot)
         )
-    )
 
-    loop.close()
+def telegram(event, context):
+    asyncio.run(main(event))
 
     return {
         "statusCode": 200,
