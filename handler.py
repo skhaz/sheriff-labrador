@@ -51,8 +51,10 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     message = update.message
     if not message:
         return
-    n = await redis.incr("temp")
-    await message.reply_text(f">>> {n}!")
+
+    user = message.from_user
+    if not user:
+        return
     # look on redis, if present, delete any message
 
 
@@ -60,6 +62,11 @@ async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     message = update.message
     if not message:
         return
+
+    user = message.from_user
+    if not user:
+        return
+
     await message.reply_text("Bye")
     # remove the key from redis
 
