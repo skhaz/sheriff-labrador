@@ -2,18 +2,19 @@ import abc
 import asyncio
 import json
 import os
+import random
 from typing import Optional
 from typing import TypedDict
-import random
 
 from redis.asyncio import ConnectionPool
 from redis.asyncio import Redis
 from telegram import Update
+from telegram.error import TelegramError
 from telegram.ext import Application
 from telegram.ext import ContextTypes
 from telegram.ext import MessageHandler
 from telegram.ext import filters
-from telegram.error import TelegramError
+
 
 class APIGatewayProxyEventV1(TypedDict):
     body: Optional[str]
@@ -76,11 +77,14 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     if not cipher:
         return
-    
+
     if cipher in message.text:
-        await redis.delete(f"ciphers:{message.chat_id}:{user.id}")
+        await asyncio.gather(
+            redis.delete(f"ciphers:{message.chat_id}:{user.id}"),
+            message.reply_text("Welcome to the group!"),
+        )
         return
-    
+
     try:
         message.delete()
     except TelegramError:
