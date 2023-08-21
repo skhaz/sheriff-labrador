@@ -24,12 +24,12 @@ class Context(metaclass=abc.ABCMeta):
     pass
 
 
-pool = ConnectionPool.from_url(os.environ["REDIS_DSN"])
-redis = Redis(connection_pool=pool)
-
 application = (
     Application.builder().token(os.environ["TELEGRAM_TOKEN"]).updater(None).build()
 )
+
+pool = ConnectionPool.from_url(os.environ["REDIS_DSN"])
+redis = Redis(connection_pool=pool)
 
 
 async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -42,7 +42,7 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     cipher = random.randint(0, 10)
-    text = f"In order for your entry to be accepted into the group, please respond with the following number: {cipher}"
+    text = f"In order for your entry to be accepted into the group, please respond with the following number: {cipher}"  # noqa
     await asyncio.gather(
         message.reply_text(text),
         redis.set(f"ciphers:{message.chat_id}:{user.id}", cipher),
@@ -73,12 +73,16 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     if not user:
         return
 
+    text = message.text
+    if not text:
+        return
+
     cipher = await redis.get(f"ciphers:{message.chat_id}:{user.id}")
 
     if not cipher:
         return
 
-    if cipher in message.text:
+    if cipher in text:
         await asyncio.gather(
             redis.delete(f"ciphers:{message.chat_id}:{user.id}"),
             message.reply_text("Welcome to the group!"),
@@ -86,7 +90,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         return
 
     try:
-        message.delete()
+        await message.delete()
     except TelegramError:
         pass
 
