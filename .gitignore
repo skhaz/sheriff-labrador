@@ -1,14 +1,14 @@
-# Virtual environment
-venv/
+# MyPy
+.mypy_cache/
+
+# Node.js
+node_modules/
 
 # Ruff
 .ruff_cache/
 
-# MyPy
-.mypy_cache/
-
 # Serverless directories
 .serverless
 
-# Node.js
-node_modules/
+# Virtual environment
+venv/
