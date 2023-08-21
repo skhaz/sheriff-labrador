@@ -22,12 +22,12 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Install Tools
-        run: pip install black ruff mypy
+        run: pip install black mypy ruff
 
       - name: Lint
         run: |
-          black handler.py
-          ruff handler.py
+          black --check handler.py 
+          ruff check handler.py
           mypy handler.py
 
   deploy:
