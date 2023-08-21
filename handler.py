@@ -47,6 +47,22 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     )
 
 
+async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    print("on_leave")
+    message = update.message
+    if not message:
+        print("no message!")
+        return
+
+    user = message.from_user
+    if not user:
+        print("no user!")
+        return
+
+    await message.reply_text("Bye")
+    # remove the key from redis
+
+
 async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     print("on_message")
     print(update.to_json())
@@ -65,25 +81,16 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     # look on redis, if present, delete any message
 
 
-async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    print("on_leave")
-    message = update.message
-    if not message:
-        print("no message!")
-        return
-
-    user = message.from_user
-    if not user:
-        print("no user!")
-        return
-
-    await message.reply_text("Bye")
-    # remove the key from redis
-
-
 application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, on_enter))
-application.add_handler(MessageHandler(filters.CHAT, on_message))
 application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, on_leave))
+application.add_handler(
+    MessageHandler(
+        filters.CHAT
+        & ~filters.StatusUpdate.NEW_CHAT_MEMBERS
+        & ~filters.StatusUpdate.LEFT_CHAT_MEMBER,
+        on_message,
+    )
+)
 
 
 async def main(event: APIGatewayProxyEventV1):
