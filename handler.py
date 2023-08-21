@@ -61,10 +61,12 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     message = update.message
     if not message:
+        print('no message!')
         return
 
     user = message.from_user
     if not user:
+        print('no user!')
         return
 
     await message.reply_text("Bye")
@@ -88,8 +90,8 @@ async def main(event: APIGatewayProxyEventV1):
 
 
 def telegram(event: APIGatewayProxyEventV1, context: Context):
-    print('>>> function_name', context.function_name)
-    print('>>> function_version', context.function_version)
+    print(">>> function_name", context.function_name)
+    print(">>> function_version", context.function_version)
 
     asyncio.get_event_loop().run_until_complete(main(event))
 
