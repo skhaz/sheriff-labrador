@@ -100,6 +100,7 @@ application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, on
 application.add_handler(
     MessageHandler(
         filters.ALL
+        & filters.Document.ALL
         & ~filters.StatusUpdate.NEW_CHAT_MEMBERS
         & ~filters.StatusUpdate.LEFT_CHAT_MEMBER,
         on_message,
