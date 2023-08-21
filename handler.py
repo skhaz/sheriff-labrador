@@ -42,7 +42,7 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     cipher = random.randint(0, 10)
-    text = f"In order for your entry to be accepted into the group, please respond with the following number: {secret}"
+    text = f"In order for your entry to be accepted into the group, please respond with the following number: {cipher}"
     await asyncio.gather(
         message.reply_text(text),
         redis.set(f"ciphers:{message.chat_id}:{user.id}", cipher),
