@@ -48,6 +48,8 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 
 async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    print("on_message")
+    print(update.to_json())
     message = update.message
     if not message:
         print("no message!")
@@ -64,6 +66,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
 
 async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    print("on_leave")
     message = update.message
     if not message:
         print("no message!")
