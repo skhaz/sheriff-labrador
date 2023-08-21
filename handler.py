@@ -80,7 +80,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     text = message.text
 
-    if not text or cipher.decode() not in text:
+    if not text or cipher.decode().lower() != text.lower():
         try:
             await message.delete()
         except TelegramError:
