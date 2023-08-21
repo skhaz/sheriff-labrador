@@ -5,7 +5,7 @@ import os
 from typing import Optional
 from typing import TypedDict
 
-from redis import ConnectionPool
+from redis.asyncio import ConnectionPool
 from redis.asyncio import Redis
 from telegram import Update
 from telegram.ext import Application
