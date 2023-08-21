@@ -3,6 +3,7 @@ import asyncio
 import json
 import os
 from typing import Optional
+from typing import TypedDict
 
 from redis import ConnectionPool
 from redis.asyncio import Redis
@@ -11,7 +12,6 @@ from telegram.ext import Application
 from telegram.ext import ContextTypes
 from telegram.ext import MessageHandler
 from telegram.ext import filters
-from typing_extensions import TypedDict
 
 
 class APIGatewayProxyEventV1(TypedDict):
