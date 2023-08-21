@@ -73,26 +73,25 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     if not user:
         return
 
-    text = message.text
-    if not text:
-        return
-
     cipher = await redis.get(f"ciphers:{message.chat_id}:{user.id}")
 
     if not cipher:
         return
 
-    if cipher.decode() in text:
-        await asyncio.gather(
-            redis.delete(f"ciphers:{message.chat_id}:{user.id}"),
-            message.reply_text("Welcome to the group!"),
-        )
+    text = message.text
+
+    if not text or cipher.decode() not in text:
+        try:
+            await message.delete()
+        except TelegramError:
+            pass
+
         return
 
-    try:
-        await message.delete()
-    except TelegramError:
-        pass
+    await asyncio.gather(
+        redis.delete(f"ciphers:{message.chat_id}:{user.id}"),
+        message.reply_text("Welcome to the group!"),
+    )
 
 
 application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, on_enter))
