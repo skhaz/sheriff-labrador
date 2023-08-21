@@ -82,7 +82,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     if not cipher:
         return
 
-    if cipher in text:
+    if cipher.decode() in text:
         await asyncio.gather(
             redis.delete(f"ciphers:{message.chat_id}:{user.id}"),
             message.reply_text("Welcome to the group!"),
