@@ -4,6 +4,7 @@ import json
 import os
 from typing import Optional
 from typing import TypedDict
+import random
 
 from redis.asyncio import ConnectionPool
 from redis.asyncio import Redis
@@ -12,7 +13,7 @@ from telegram.ext import Application
 from telegram.ext import ContextTypes
 from telegram.ext import MessageHandler
 from telegram.ext import filters
-
+from telegram.error import TelegramError
 
 class APIGatewayProxyEventV1(TypedDict):
     body: Optional[str]
@@ -33,52 +34,57 @@ application = (
 async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     message = update.message
     if not message:
-        print("no message!")
         return
 
     user = message.from_user
     if not user:
-        print("no user!")
         return
 
+    cipher = random.randint(0, 10)
+    text = f"In order for your entry to be accepted into the group, please respond with the following number: {secret}"
     await asyncio.gather(
-        message.reply_text("Hi!"),
-        redis.set(f"telegram:{message.chat_id}:{user.id}", "1"),
+        message.reply_text(text),
+        redis.set(f"ciphers:{message.chat_id}:{user.id}", cipher),
     )
 
 
 async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    print("on_leave")
     message = update.message
     if not message:
-        print("no message!")
         return
 
     user = message.from_user
     if not user:
-        print("no user!")
         return
 
-    await message.reply_text("Bye")
-    # remove the key from redis
+    await asyncio.gather(
+        message.reply_text("Bye"),
+        redis.delete(f"ciphers:{message.chat_id}:{user.id}"),
+    )
 
 
 async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    print("on_message")
-    print(update.to_json())
     message = update.message
     if not message:
-        print("no message!")
         return
 
     user = message.from_user
     if not user:
-        print("no user!")
         return
 
-    x = await redis.incr("x")
-    await message.reply_text(f"Hello {x}")
-    # look on redis, if present, delete any message
+    cipher = await redis.get(f"ciphers:{message.chat_id}:{user.id}")
+
+    if not cipher:
+        return
+    
+    if cipher in message.text:
+        await redis.delete(f"ciphers:{message.chat_id}:{user.id}")
+        return
+    
+    try:
+        message.delete()
+    except TelegramError:
+        pass
 
 
 application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, on_enter))
