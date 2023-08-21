@@ -99,7 +99,7 @@ application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, on
 application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, on_leave))
 application.add_handler(
     MessageHandler(
-        filters.CHAT
+        filters.ALL
         & ~filters.StatusUpdate.NEW_CHAT_MEMBERS
         & ~filters.StatusUpdate.LEFT_CHAT_MEMBER,
         on_message,
