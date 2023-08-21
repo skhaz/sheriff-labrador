@@ -87,7 +87,10 @@ async def main(event: APIGatewayProxyEventV1):
         )
 
 
-def telegram(event: APIGatewayProxyEventV1, context):
+def telegram(event: APIGatewayProxyEventV1, context: Context):
+    print('>>> function_name', context.function_name)
+    print('>>> function_version', context.function_version)
+
     asyncio.get_event_loop().run_until_complete(main(event))
 
     return {
