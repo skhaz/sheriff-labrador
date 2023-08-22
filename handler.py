@@ -43,7 +43,7 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     cipher = "".join(random.sample(string.ascii_uppercase, 4))
-    caption = "In order for your entry to be accepted into the group, please answer the captcha"  # noqa
+    caption = "Woof! In order for your entry to be accepted into the group, please answer the captcha."  # noqa
     await asyncio.gather(
         message.reply_photo(os.environ["CAPTCHA_URL"].format(cipher), caption=caption),
         redis.set(f"ciphers:{message.chat_id}:{user.id}", cipher),
