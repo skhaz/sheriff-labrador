@@ -16,17 +16,17 @@ functions:
     handler: handler.telegram
     environment:
       CAPTCHA_URL: ${env:CAPTCHA_URL}
-      TEMP: "!GetAtt HttpApi.ApiEndpoint"
+      #      TEMP: "!GetAtt HttpApi.ApiEndpoint"
       REDIS_DSN: ${env:REDIS_DSN}
       TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
     events:
       - http: POST /webhook
 
-  captcha:
-    runtime: provided.al2
-    handler: bootstrap
-    events:
-      - http: GET /captcha
+  # captcha:
+  #   runtime: provided.al2
+  #   handler: bootstrap
+  #   events:
+  #     - http: GET /captcha
 
 plugins:
   - serverless-python-requirements
