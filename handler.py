@@ -4,6 +4,7 @@ import json
 import multiprocessing
 import os
 import random
+import string
 from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Optional
 from typing import TypedDict
@@ -46,7 +47,7 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not user:
         return
 
-    cipher = random.randint(0, 10)
+    cipher = random.sample(string.ascii_uppercase + string.digits, 4)
     text = f"In order for your entry to be accepted into the group, please respond with the following number: {cipher}"  # noqa
     await asyncio.gather(
         message.reply_text(text),
