@@ -1,5 +1,6 @@
 import abc
 import asyncio
+import io
 import json
 import multiprocessing
 import os
@@ -8,6 +9,7 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Optional
 from typing import TypedDict
 
+import captcha
 from redis.asyncio import ConnectionPool
 from redis.asyncio import Redis
 from telegram import Update
@@ -100,13 +102,17 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
 
 async def temp(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    result = await asyncio.get_event_loop().run_in_executor(
-        executor, lambda: "Hello, World!"
-    )
+    def func():
+        buffer = io.BytesIO()
+        captcha.write(chars="4321", output=buffer)
+        buffer.seek(0)
+        return buffer
+
+    result = await asyncio.get_event_loop().run_in_executor(executor, func)
     message = update.message
     if not message:
         return
-    await message.reply_text(result)
+    await message.reply_photo(result)
 
 
 application.add_handler(CommandHandler("temp", temp))
