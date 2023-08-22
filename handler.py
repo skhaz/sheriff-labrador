@@ -47,7 +47,7 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not user:
         return
 
-    cipher = random.sample(string.ascii_uppercase + string.digits, 4)
+    cipher = "".join(random.sample(string.ascii_uppercase + string.digits, 4))
     text = f"In order for your entry to be accepted into the group, please respond with the following number: {cipher}"  # noqa
     await asyncio.gather(
         message.reply_text(text),
