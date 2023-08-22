@@ -1,11 +1,9 @@
 import abc
 import asyncio
 import json
-import multiprocessing
 import os
 import random
 import string
-from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Optional
 from typing import TypedDict
 
@@ -34,8 +32,6 @@ application = (
 
 pool = ConnectionPool.from_url(os.environ["REDIS_DSN"])
 redis = Redis(connection_pool=pool)
-
-executor = ThreadPoolExecutor(max_workers=multiprocessing.cpu_count())
 
 
 async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -101,14 +97,11 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
 
 async def temp(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    def func():
-        return "Ok"
-
-    result = await asyncio.get_event_loop().run_in_executor(executor, func)
     message = update.message
     if not message:
         return
-    await message.reply_text(result)
+
+    await message.reply_text("Ok")
 
 
 application.add_handler(CommandHandler("temp", temp))
