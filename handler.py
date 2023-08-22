@@ -12,7 +12,6 @@ from redis.asyncio import Redis
 from telegram import Update
 from telegram.error import TelegramError
 from telegram.ext import Application
-from telegram.ext import CommandHandler
 from telegram.ext import ContextTypes
 from telegram.ext import MessageHandler
 from telegram.ext import filters
@@ -44,9 +43,9 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     cipher = "".join(random.sample(string.ascii_uppercase, 4))
-    text = f"In order for your entry to be accepted into the group, please respond with the following number: {cipher}"  # noqa
+    caption = "In order for your entry to be accepted into the group, please answer the captcha"  # noqa
     await asyncio.gather(
-        message.reply_text(text),
+        message.reply_photo(os.environ["CAPTCHA_URL"].format(cipher), caption=caption),
         redis.set(f"ciphers:{message.chat_id}:{user.id}", cipher),
     )
 
@@ -96,18 +95,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     )
 
 
-async def temp(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    message = update.message
-    if not message:
-        return
-
-    await message.reply_photo(
-        "https://vy20xyg6p0.execute-api.us-east-1.amazonaws.com/?text=ABCD",
-        caption="This is a temporary image",
-    )
-
-
-application.add_handler(CommandHandler("temp", temp))
 application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, on_enter))
 application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, on_leave))
 application.add_handler(

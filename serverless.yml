@@ -15,6 +15,7 @@ functions:
   telegram:
     handler: handler.telegram
     environment:
+      CAPTCHA_URL: ${env:CAPTCHA_URL}
       REDIS_DSN: ${env:REDIS_DSN}
       TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
     events:
