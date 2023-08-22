@@ -8,7 +8,6 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from typing import Optional
 from typing import TypedDict
 
-from captcha.image import ImageCaptcha
 from redis.asyncio import ConnectionPool
 from redis.asyncio import Redis
 from telegram import Update
@@ -36,8 +35,6 @@ pool = ConnectionPool.from_url(os.environ["REDIS_DSN"])
 redis = Redis(connection_pool=pool)
 
 executor = ThreadPoolExecutor(max_workers=multiprocessing.cpu_count())
-
-image = ImageCaptcha()
 
 
 async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -104,13 +101,13 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
 async def temp(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     def func():
-        return image.generate("ABCD")
+        return "Ok"
 
     result = await asyncio.get_event_loop().run_in_executor(executor, func)
     message = update.message
     if not message:
         return
-    await message.reply_photo(result)
+    await message.reply_text(result)
 
 
 application.add_handler(CommandHandler("temp", temp))
