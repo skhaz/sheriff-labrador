@@ -7,13 +7,13 @@ configValidationMode: error
 provider:
   name: aws
   region: us-east-1
-  runtime: python3.10
   architecture: arm64
   stage: development
 
 functions:
   telegram:
     handler: handler.telegram
+    runtime: python3.10
     environment:
       CAPTCHA_URL: ${env:CAPTCHA_URL}
       TEMP: !GetAtt HttpApi.ApiEndpoint
@@ -21,12 +21,12 @@ functions:
       TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
     events:
       - http: POST /webhook
+
   captcha:
     handler: bootstrap
+    runtime: provided.al2
     events:
-      - httpApi:
-          path: /captcha
-          method: get
+      - http: GET /captcha
 
 plugins:
   - serverless-python-requirements
