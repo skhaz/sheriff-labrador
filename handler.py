@@ -101,7 +101,7 @@ async def temp(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not message:
         return
 
-    await message.reply_text("Ok")
+    await message.reply_photo("https://vy20xyg6p0.execute-api.us-east-1.amazonaws.com/?text=ABCD")
 
 
 application.add_handler(CommandHandler("temp", temp))
