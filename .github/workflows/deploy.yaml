@@ -24,11 +24,14 @@ jobs:
       - name: Install Tools
         run: pip install black mypy ruff
 
-      - name: Lint
+      - name: Lint Python
         run: |
           black --check handler.py 
           ruff check handler.py
           mypy handler.py
+
+      - name: Lint Go
+        uses: golangci/golangci-lint-action@v3
 
   deploy:
     runs-on: ubuntu-latest
@@ -50,6 +53,21 @@ jobs:
 
       - name: Install Serverless Framework
         run: npm install -g serverless serverless-python-requirements
+
+      - name: Use Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.21"
+
+      - name: Build Lambda Function
+        run: |
+          go get -u -t -d -v ./...
+          go mod tidy
+          go mod vendor
+          go build -tags lambda.norpc -o bootstrap main.go
+        env:
+          GOARCH: arm64
+          GOOS: linux
 
       - name: Deploy
         run: serverless deploy
