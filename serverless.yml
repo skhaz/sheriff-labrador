@@ -16,7 +16,7 @@ functions:
     handler: handler.telegram
     environment:
       CAPTCHA_URL: ${env:CAPTCHA_URL}
-      TEMP: !GetAtt HttpApi.captcha
+      TEMP: "!GetAtt HttpApi.ApiEndpoint"
       REDIS_DSN: ${env:REDIS_DSN}
       TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
     events:
