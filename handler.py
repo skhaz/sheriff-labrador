@@ -43,7 +43,7 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not user:
         return
 
-    cipher = "".join(random.sample(string.ascii_lowercase + string.digits, 4))
+    cipher = "".join(random.sample(string.ascii_uppercase, 4))
     text = f"In order for your entry to be accepted into the group, please respond with the following number: {cipher}"  # noqa
     await asyncio.gather(
         message.reply_text(text),
@@ -82,7 +82,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     text = message.text
 
-    if not text or cipher.decode().lower() != text.lower():
+    if not text or cipher.decode().upper() != text.upper():
         try:
             await message.delete()
         except TelegramError:
@@ -102,7 +102,8 @@ async def temp(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     await message.reply_photo(
-        "https://vy20xyg6p0.execute-api.us-east-1.amazonaws.com/?text=ABCD"
+        "https://vy20xyg6p0.execute-api.us-east-1.amazonaws.com/?text=ABCD",
+        caption="This is a temporary image",
     )
 
 
