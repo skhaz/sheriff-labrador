@@ -36,12 +36,6 @@ jobs:
           cache-dependency-path: go.sum
           go-version-file: go.mod
 
-      # - name: Download Go Dependencies
-      #   run: |
-      #     go get -u -t -d -v ./...
-      #     go mod tidy
-      #     go mod vendor
-
       - name: Lint Go
         uses: golangci/golangci-lint-action@v3
 
