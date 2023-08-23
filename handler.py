@@ -44,7 +44,7 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     cipher = "".join(random.sample(string.ascii_uppercase, 4))
-    url = os.environ["CAPTCHA_URL"].format(cipher)
+    url = f"{os.environ['CAPTCHA_URL']}?text={cipher}"
     caption = "Woof! In order for your entry to be accepted into the group, please answer the captcha."  # noqa
 
     await asyncio.gather(
@@ -98,16 +98,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     )
 
 
-async def on_temp(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    message = update.message
-    if not message:
-        return
-
-    await message.reply_text(os.environ["TEMP"])
-    await message.reply_photo(f"{os.environ['TEMP']}?text=ok")
-
-
-application.add_handler(CommandHandler("temp", on_temp))
 application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, on_enter))
 application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, on_leave))
 application.add_handler(

@@ -19,8 +19,7 @@ functions:
           path: /webhook
           method: post
     environment:
-      CAPTCHA_URL: ${env:CAPTCHA_URL}
-      TEMP: !GetAtt HttpApi.ApiEndpoint
+      CAPTCHA_URL: !GetAtt HttpApi.ApiEndpoint
       REDIS_DSN: ${env:REDIS_DSN}
       TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
 
