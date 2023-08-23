@@ -15,10 +15,12 @@ functions:
     runtime: python3.10
     handler: handler.telegram
     events:
-      - http: POST /webhook
+      - httpApi:
+          path: /webhook
+          method: post
     environment:
       CAPTCHA_URL: ${env:CAPTCHA_URL}
-      #      TEMP: "!GetAtt HttpApi.ApiEndpoint"
+      TEMP: "!GetAtt HttpApi.captcha"
       REDIS_DSN: ${env:REDIS_DSN}
       TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
 
@@ -26,7 +28,8 @@ functions:
     runtime: provided.al2
     handler: bootstrap
     events:
-      - http: GET /captcha
-
+      - httpApi:
+          path: /
+          method: get
 plugins:
   - serverless-python-requirements
