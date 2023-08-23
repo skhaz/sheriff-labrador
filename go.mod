@@ -1,6 +1,6 @@
 module skhaz.dev/captcha
 
-go 1.21.0
+go 1.21
 
 require golang.org/x/image v0.11.0
 
