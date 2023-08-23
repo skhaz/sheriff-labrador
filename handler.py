@@ -6,6 +6,7 @@ import random
 import string
 from typing import Optional
 from typing import TypedDict
+from urllib.parse import quote
 
 from redis.asyncio import ConnectionPool
 from redis.asyncio import Redis
@@ -43,7 +44,7 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return
 
     cipher = "".join(random.sample(string.ascii_uppercase, 4))
-    url = f"{os.environ['CAPTCHA_URL']}?text={cipher}"
+    url = f"{os.environ['ENDPOINT']}?text={quote(cipher, safe='')}"
     caption = "Woof! In order for your entry to be accepted into the group, please answer the captcha."  # noqa
 
     await asyncio.gather(

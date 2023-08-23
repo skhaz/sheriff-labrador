@@ -46,12 +46,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # - name: Use Go
-      #   uses: actions/setup-go@v4
-      #   with:
-      #     cache-dependency-path: go.sum
-      #     go-version-file: go.mod
-
       - name: Build Go Lambda Function
         run: |
           go get -u -t -d -v ./...
