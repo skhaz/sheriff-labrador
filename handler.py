@@ -15,6 +15,7 @@ from telegram.ext import Application
 from telegram.ext import ContextTypes
 from telegram.ext import MessageHandler
 from telegram.ext import filters
+from telegram.ext import CommandHandler
 
 
 class APIGatewayProxyEventV1(TypedDict):
@@ -96,7 +97,16 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         message.reply_text("Welcome to the group!"),
     )
 
+async def on_temp(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    message = update.message
+    if not message:
+        return
 
+    await message.reply_text(os.environ['TEMP'])
+    await message.reply_photo(f"{os.environ['TEMP']}?text=ok")
+    
+
+application.add_handler(CommandHandler("temp", on_temp))
 application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, on_enter))
 application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, on_leave))
 application.add_handler(
