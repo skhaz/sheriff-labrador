@@ -85,7 +85,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     text = message.text
 
-    if not text or cipher.decode() != re.sub(r"\s+", "", text.upper()):
+    if not text or cipher.decode() != re.sub(r"\s+", "", text).upper():
         try:
             await message.delete()
         except TelegramError:
