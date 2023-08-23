@@ -3,6 +3,7 @@ import asyncio
 import json
 import os
 import random
+import re
 import string
 from typing import Optional
 from typing import TypedDict
@@ -84,7 +85,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     text = message.text
 
-    if not text or cipher.decode() != text.upper():
+    if not text or cipher.decode() != re.sub(r"\s+", "", text.upper()):
         try:
             await message.delete()
         except TelegramError:
