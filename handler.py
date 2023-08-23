@@ -12,7 +12,6 @@ from redis.asyncio import Redis
 from telegram import Update
 from telegram.error import TelegramError
 from telegram.ext import Application
-from telegram.ext import CommandHandler
 from telegram.ext import ContextTypes
 from telegram.ext import MessageHandler
 from telegram.ext import filters
