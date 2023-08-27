@@ -44,6 +44,9 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = message.from_user
     if not user:
         return
+    
+    if user.id == context.bot.id:
+        return
 
     cipher = "".join(random.sample(string.ascii_uppercase, 4))
     url = f"{os.environ['ENDPOINT']}?text={quote(cipher, safe='')}"
