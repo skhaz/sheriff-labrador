@@ -13,7 +13,6 @@ from redis.asyncio import ConnectionPool
 from redis.asyncio import Redis
 from telegram import Update
 from telegram.constants import ParseMode
-from telegram.error import TelegramError
 from telegram.ext import Application
 from telegram.ext import ContextTypes
 from telegram.ext import MessageHandler
@@ -41,26 +40,24 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not message:
         return
 
-    user = message.from_user
-    if not user:
-        return
+    for user in message.new_chat_members:
+        if not user:
+            continue
 
-    print("message new_chat_members", message.new_chat_members)
-    print("user id", user.id)
-    print("user username", user.username)
-    print("context.bot.id", context.bot.id)
+        if user.is_bot:
+            continue
 
-    cipher = "".join(random.sample(string.ascii_uppercase, 4))
-    url = f"{os.environ['ENDPOINT']}?text={quote(cipher, safe='')}"
-    caption = "Woof! In order for your entry to be accepted into the group, please answer the captcha."  # noqa
+        cipher = "".join(random.sample(string.ascii_uppercase, 4))
+        url = f"{os.environ['ENDPOINT']}?text={quote(cipher, safe='')}"
+        caption = "Woof! In order for your entry to be accepted into the group, please answer the captcha."  # noqa
 
-    response = await message.reply_photo(url, caption=caption)
+        response = await message.reply_photo(url, caption=caption)
 
-    pipe = redis.pipeline()
-    pipe.set(f"ciphers:{message.chat_id}:{user.id}", cipher)
-    pipe.set(f"messages:{message.chat_id}:{user.id}", response.id)
-    pipe.set(f"joins:{message.chat_id}:{user.id}", message.id)
-    await pipe.execute()
+        pipe = redis.pipeline()
+        pipe.set(f"ciphers:{message.chat_id}:{user.id}", cipher)
+        pipe.set(f"messages:{message.chat_id}:{user.id}", response.id)
+        pipe.set(f"joins:{message.chat_id}:{user.id}", message.id)
+        await pipe.execute()
 
 
 async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -109,11 +106,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     text = message.text
 
     if not text or cipher.decode() != re.sub(r"\s+", "", text).upper():
-        try:
-            await message.delete()
-        except TelegramError:
-            pass
-
+        await message.delete()
         return
 
     message_id = await redis.get(f"messages:{message.chat_id}:{user.id}")
@@ -124,6 +117,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
             message_id=message_id.decode(),
         ),
         redis.delete(f"ciphers:{message.chat_id}:{user.id}"),
+        message.delete(),
     )
 
     user = message.from_user
