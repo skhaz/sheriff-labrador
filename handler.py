@@ -55,9 +55,9 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     pipe.set(f"messages:{message.chat_id}:{user.id}", response.id)
     await pipe.execute()
 
-    #await asyncio.gather(
+    # await asyncio.gather(
     #    redis.set(f"ciphers:{message.chat_id}:{user.id}", cipher),
-    #)
+    # )
 
 
 async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -73,10 +73,7 @@ async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     pipe.delete(f"ciphers:{message.chat_id}:{user.id}")
     pipe.delete(f"messages:{message.chat_id}:{user.id}")
 
-    await asyncio.gather(
-        message.reply_text("Bye"),
-        pipe.execute()
-    )
+    await asyncio.gather(message.reply_text("Bye"), pipe.execute())
 
 
 async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
