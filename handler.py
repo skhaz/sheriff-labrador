@@ -12,6 +12,7 @@ from urllib.parse import quote
 from redis.asyncio import ConnectionPool
 from redis.asyncio import Redis
 from telegram import Update
+from telegram.constants import ParseMode
 from telegram.error import TelegramError
 from telegram.ext import Application
 from telegram.ext import ContextTypes
@@ -114,11 +115,23 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     await asyncio.gather(
         context.bot.delete_message(
-            chat_id=message.chat_id, message_id=message_id.decode()
+            chat_id=message.chat_id,
+            message_id=message_id.decode(),
         ),
         redis.delete(f"ciphers:{message.chat_id}:{user.id}"),
-        message.reply_text("Welcome to the group!"),
     )
+
+    user = message.from_user
+    if not user:
+        return
+
+    mention = f"[{user.username}](tg://user?id={user.id})"
+
+    await context.bot.send_message(
+        message.chat_id,
+        f"{mention} Welcome to the group!",
+        parse_mode=ParseMode.MARKDOWN,
+    ),
 
 
 application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, on_enter))
