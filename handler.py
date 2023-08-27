@@ -50,11 +50,10 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     response = await message.reply_photo(url, caption=caption)
 
-    print("response.id", response.id)  # noqa
-
     pipe = redis.pipeline()
     pipe.set(f"ciphers:{message.chat_id}:{user.id}", cipher)
     pipe.set(f"messages:{message.chat_id}:{user.id}", response.id)
+    pipe.set(f"joins:{message.chat_id}:{user.id}", message.id)
     await pipe.execute()
 
 
@@ -67,16 +66,23 @@ async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not user:
         return
 
-    uid = await redis.get(f"messages:{message.chat_id}:{user.id}")
-
     pipe = redis.pipeline()
+    pipe.get(f"messages:{message.chat_id}:{user.id}")
+    pipe.get(f"joins:{message.chat_id}:{user.id}")
     pipe.delete(f"ciphers:{message.chat_id}:{user.id}")
     pipe.delete(f"messages:{message.chat_id}:{user.id}")
+    pipe.delete(f"joins:{message.chat_id}:{user.id}")
+
+    message_id, join_id, *_ = await pipe.execute()
 
     await asyncio.gather(
-        context.bot.delete_message(chat_id=message.chat_id, message_id=uid.decode()),
-        message.reply_text("Bye"),
-        pipe.execute(),
+        context.bot.delete_message(
+            chat_id=message.chat_id, message_id=message_id.decode()
+        ),
+        context.bot.delete_message(
+            chat_id=message.chat_id, message_id=join_id.decode()
+        ),
+        message.delete(),
     )
 
 
@@ -104,10 +110,12 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
         return
 
-    uid = await redis.get(f"messages:{message.chat_id}:{user.id}")
+    message_id = await redis.get(f"messages:{message.chat_id}:{user.id}")
 
     await asyncio.gather(
-        context.bot.delete_message(chat_id=message.chat_id, message_id=uid.decode()),
+        context.bot.delete_message(
+            chat_id=message.chat_id, message_id=message_id.decode()
+        ),
         redis.delete(f"ciphers:{message.chat_id}:{user.id}"),
         message.reply_text("Welcome to the group!"),
     )
