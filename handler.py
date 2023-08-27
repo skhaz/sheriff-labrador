@@ -78,7 +78,7 @@ async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     pipe.delete(f"messages:{message.chat_id}:{user.id}")
 
     await asyncio.gather(
-        context.bot.delete_message(chat_id=message.chat_id, message_id=message_id),
+        context.bot.delete_message(chat_id=message.chat_id, message_id=message_id.decode()),
         message.reply_text("Bye"),
         pipe.execute(),
     )
@@ -113,7 +113,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     print("message_id", message_id)  # noqa
 
     await asyncio.gather(
-        context.bot.delete_message(chat_id=message.chat_id, message_id=message_id),
+        context.bot.delete_message(chat_id=message.chat_id, message_id=message_id.decode()),
         redis.delete(f"ciphers:{message.chat_id}:{user.id}"),
         message.reply_text("Welcome to the group!"),
     )
