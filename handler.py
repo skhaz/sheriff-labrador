@@ -44,7 +44,7 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user = message.from_user
     if not user:
         return
-    
+
     if user.id == context.bot.id:
         return
 
