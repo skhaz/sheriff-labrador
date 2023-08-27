@@ -1,6 +1,7 @@
 import abc
 import asyncio
 import json
+import logging
 import os
 import random
 import re
@@ -13,6 +14,7 @@ from redis.asyncio import ConnectionPool
 from redis.asyncio import Redis
 from telegram import Update
 from telegram.constants import ParseMode
+from telegram.error import TelegramError
 from telegram.ext import Application
 from telegram.ext import ContextTypes
 from telegram.ext import MessageHandler
@@ -33,6 +35,22 @@ application = (
 
 pool = ConnectionPool.from_url(os.environ["REDIS_DSN"])
 redis = Redis(connection_pool=pool)
+
+
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
+logger = logging.getLogger(__name__)
+
+
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    error = context.error
+    if not error:
+        return
+
+    logger.error("Exception while handling an update:", exc_info=error)
+
+    if isinstance(error, TelegramError):
+        print("Error", error.message)
 
 
 async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -136,6 +154,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     ),
 
 
+application.add_error_handler(error_handler)
 application.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, on_enter))
 application.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, on_leave))
 application.add_handler(
