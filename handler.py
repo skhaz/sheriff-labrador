@@ -106,8 +106,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     uid = await redis.get(f"messages:{message.chat_id}:{user.id}")
 
-    print("message_id", uid)  # noqa
-
     await asyncio.gather(
         context.bot.delete_message(chat_id=message.chat_id, message_id=uid.decode()),
         redis.delete(f"ciphers:{message.chat_id}:{user.id}"),
