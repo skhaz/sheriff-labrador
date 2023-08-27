@@ -48,10 +48,16 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     url = f"{os.environ['ENDPOINT']}?text={quote(cipher, safe='')}"
     caption = "Woof! In order for your entry to be accepted into the group, please answer the captcha."  # noqa
 
-    await asyncio.gather(
-        message.reply_photo(url, caption=caption),
-        redis.set(f"ciphers:{message.chat_id}:{user.id}", cipher),
-    )
+    response = await message.reply_photo(url, caption=caption)
+
+    pipe = redis.pipeline()
+    pipe.set(f"ciphers:{message.chat_id}:{user.id}", cipher)
+    pipe.set(f"messages:{message.chat_id}:{user.id}", response.id)
+    await pipe.execute()
+
+    #await asyncio.gather(
+    #    redis.set(f"ciphers:{message.chat_id}:{user.id}", cipher),
+    #)
 
 
 async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -63,9 +69,13 @@ async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not user:
         return
 
+    pipe = redis.pipeline()
+    pipe.delete(f"ciphers:{message.chat_id}:{user.id}")
+    pipe.delete(f"messages:{message.chat_id}:{user.id}")
+
     await asyncio.gather(
         message.reply_text("Bye"),
-        redis.delete(f"ciphers:{message.chat_id}:{user.id}"),
+        pipe.execute()
     )
 
 
