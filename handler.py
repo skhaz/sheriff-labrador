@@ -45,8 +45,9 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not user:
         return
 
-    if user.id == context.bot.id:
-        return
+    print('user id', user.id)
+    print('user username', user.username)
+    print('context.bot.id', context.bot.id)
 
     cipher = "".join(random.sample(string.ascii_uppercase, 4))
     url = f"{os.environ['ENDPOINT']}?text={quote(cipher, safe='')}"
