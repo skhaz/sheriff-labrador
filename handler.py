@@ -45,7 +45,7 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not user:
         return
 
-    print("update new_chat_members", update.new_chat_members)
+    print("message new_chat_members", message.new_chat_members)
     print("user id", user.id)
     print("user username", user.username)
     print("context.bot.id", context.bot.id)
