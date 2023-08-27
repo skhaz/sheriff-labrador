@@ -14,7 +14,7 @@ from redis.asyncio import ConnectionPool
 from redis.asyncio import Redis
 from telegram import Update
 from telegram.constants import ParseMode
-from telegram.error import TelegramError
+from telegram.error import BadRequest
 from telegram.ext import Application
 from telegram.ext import ContextTypes
 from telegram.ext import MessageHandler
@@ -49,8 +49,18 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
 
     logger.error("Exception while handling an update:", exc_info=error)
 
-    if isinstance(error, TelegramError):
-        print("Error", error.message)
+    if not isinstance(update, Update):
+        return
+
+    if isinstance(error, BadRequest):
+        chat = update.effective_chat
+
+        if not chat:
+            return
+
+        text = "Howl... I need to be an admin in order to work properly."
+
+        await context.bot.send_message(chat_id=chat.id, text=text)
 
 
 async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
