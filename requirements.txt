@@ -1,2 +1,3 @@
+asyncio-redis-rate-limit==1.0.0
 python-telegram-bot==20.4
 redis==5.0.0
