@@ -50,6 +50,8 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     response = await message.reply_photo(url, caption=caption)
 
+    print("response.id", response.id)  # noqa
+
     pipe = redis.pipeline()
     pipe.set(f"ciphers:{message.chat_id}:{user.id}", cipher)
     pipe.set(f"messages:{message.chat_id}:{user.id}", response.id)
@@ -107,6 +109,8 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         return
 
     message_id = await redis.get(f"messages:{message.chat_id}:{user.id}")
+
+    print("message_id", message_id)  # noqa
 
     await asyncio.gather(
         context.bot.delete_message(chat_id=message.chat_id, message_id=message_id),
