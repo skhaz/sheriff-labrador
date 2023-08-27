@@ -65,28 +65,29 @@ async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not message:
         return
 
-    user = message.from_user
-    if not user:
-        return
+    # user = message.from_user
+    # if not user:
+    #     return
 
-    pipe = redis.pipeline()
-    pipe.get(f"messages:{message.chat_id}:{user.id}")
-    pipe.get(f"joins:{message.chat_id}:{user.id}")
-    pipe.delete(f"ciphers:{message.chat_id}:{user.id}")
-    pipe.delete(f"messages:{message.chat_id}:{user.id}")
-    pipe.delete(f"joins:{message.chat_id}:{user.id}")
+    for user in message.left_chat_member:
+        pipe = redis.pipeline()
+        pipe.get(f"messages:{message.chat_id}:{user.id}")
+        pipe.get(f"joins:{message.chat_id}:{user.id}")
+        pipe.delete(f"ciphers:{message.chat_id}:{user.id}")
+        pipe.delete(f"messages:{message.chat_id}:{user.id}")
+        pipe.delete(f"joins:{message.chat_id}:{user.id}")
 
-    message_id, join_id, *_ = await pipe.execute()
+        message_id, join_id, *_ = await pipe.execute()
 
-    await asyncio.gather(
-        context.bot.delete_message(
-            chat_id=message.chat_id, message_id=message_id.decode()
-        ),
-        context.bot.delete_message(
-            chat_id=message.chat_id, message_id=join_id.decode()
-        ),
-        message.delete(),
-    )
+        await asyncio.gather(
+            context.bot.delete_message(
+                chat_id=message.chat_id, message_id=message_id.decode()
+            ),
+            context.bot.delete_message(
+                chat_id=message.chat_id, message_id=join_id.decode()
+            ),
+            message.delete(),
+        )
 
 
 async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
