@@ -57,10 +57,6 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     pipe.set(f"messages:{message.chat_id}:{user.id}", response.id)
     await pipe.execute()
 
-    # await asyncio.gather(
-    #    redis.set(f"ciphers:{message.chat_id}:{user.id}", cipher),
-    # )
-
 
 async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     message = update.message
@@ -71,14 +67,14 @@ async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not user:
         return
 
-    message_id = await redis.get(f"messages:{message.chat_id}:{user.id}")
+    uid = await redis.get(f"messages:{message.chat_id}:{user.id}")
 
     pipe = redis.pipeline()
     pipe.delete(f"ciphers:{message.chat_id}:{user.id}")
     pipe.delete(f"messages:{message.chat_id}:{user.id}")
 
     await asyncio.gather(
-        context.bot.delete_message(chat_id=message.chat_id, message_id=message_id.decode()),
+        context.bot.delete_message(chat_id=message.chat_id, message_id=uid.decode()),
         message.reply_text("Bye"),
         pipe.execute(),
     )
@@ -108,12 +104,12 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
         return
 
-    message_id = await redis.get(f"messages:{message.chat_id}:{user.id}")
+    uid = await redis.get(f"messages:{message.chat_id}:{user.id}")
 
-    print("message_id", message_id)  # noqa
+    print("message_id", uid)  # noqa
 
     await asyncio.gather(
-        context.bot.delete_message(chat_id=message.chat_id, message_id=message_id.decode()),
+        context.bot.delete_message(chat_id=message.chat_id, message_id=uid.decode()),
         redis.delete(f"ciphers:{message.chat_id}:{user.id}"),
         message.reply_text("Welcome to the group!"),
     )
