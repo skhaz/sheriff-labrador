@@ -54,7 +54,7 @@ jobs:
           go get -u -t -d -v ./...
           go mod tidy
           go mod vendor
-          go build -ldflags="-s -w" -tags lambda.norpc -o bootstrap main.go
+          go build -ldflags="-s -w" -trimpath -tags lambda.norpc -o bootstrap main.go
         env:
           GOARCH: arm64
           GOOS: linux
