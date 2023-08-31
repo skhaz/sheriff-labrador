@@ -83,8 +83,17 @@ jobs:
 
       - name: Set Webhook
         run: |
-          URL=$(serverless info --verbose --stage development | grep "/webhook" | grep -Eo "https://[^ >]+")
-          echo "$URL" > "URL.txt"
+          echo 1
+          serverless info --verbose --stage development
+
+          echo 2
+
+          serverless info --verbose --stage development | grep "/webhook"
+
+          echo 3
+
+          #URL=$(serverless info --verbose --stage development | grep "/webhook" | grep -Eo "https://[^ >]+")
+          #echo "$URL" > "URL.txt"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
