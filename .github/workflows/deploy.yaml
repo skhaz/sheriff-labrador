@@ -80,3 +80,12 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           REDIS_DSN: ${{ secrets.REDIS_DSN }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+
+      - name: Set Webhook
+        run: |
+          URL="$(serverless info --verbose | grep ServiceEndpoint | sed s/ServiceEndpoint\:\ //g)"
+          echo "$URL"
+        env:
+          AWS_API_ID: ${{ secrets.AWS_API_ID }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
