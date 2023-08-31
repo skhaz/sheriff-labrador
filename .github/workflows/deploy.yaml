@@ -84,8 +84,14 @@ jobs:
       - name: Set Webhook
         run: |
           URL="$(serverless info --verbose | grep ServiceEndpoint | sed s/ServiceEndpoint\:\ //g)"
-          echo "$URL"
+          echo "$URL" > "URL.txt"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+
+      - uses: actions/upload-artifact@v3
+        name: Upload Artifact
+        with:
+          name: URL
+          path: "URL.txt"
