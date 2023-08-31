@@ -63,10 +63,9 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	)
 
 	for _, char := range text {
-		charWidth := font.MeasureString(face, string(char)).Ceil()
 		drawer.Dot = fixed.Point26_6{X: fixed.I(x), Y: fixed.I(y)}
 		drawer.DrawString(string(char))
-		x += charWidth + spacing
+		x += font.MeasureString(face, string(char)).Ceil() + spacing
 	}
 
 	var buffer bytes.Buffer
