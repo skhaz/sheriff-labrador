@@ -60,9 +60,10 @@ func Handler(request events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		spacing        = (width - totalTextWidth) / (len(text) + 1)
 		x              = spacing
 		y              = (height + int(fontSize)) / 2
+		char           rune
 	)
 
-	for _, char := range text {
+	for _, char = range text {
 		drawer.Dot = fixed.Point26_6{X: fixed.I(x), Y: fixed.I(y)}
 		drawer.DrawString(string(char))
 		x += font.MeasureString(face, string(char)).Ceil() + spacing
