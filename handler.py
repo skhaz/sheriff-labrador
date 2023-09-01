@@ -8,7 +8,7 @@ import re
 import string
 from typing import Optional
 from typing import TypedDict
-from urllib.parse import quote
+from urllib.parse import urlencode
 
 from redis.asyncio import ConnectionPool
 from redis.asyncio import Redis
@@ -76,7 +76,7 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             continue
 
         cipher = "".join(random.sample(string.ascii_uppercase, 4))
-        url = f"{os.environ['ENDPOINT']}?text={quote(cipher, safe='')}"
+        url = "?".join([os.environ['ENDPOINT'], urlencode({"text": cipher})])
         caption = "Woof! In order for your entry to be accepted into the group, please answer the captcha."  # noqa
 
         response = await message.reply_photo(url, caption=caption)
