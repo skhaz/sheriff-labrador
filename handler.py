@@ -76,7 +76,7 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             continue
 
         cipher = "".join(random.sample(string.ascii_uppercase, 4))
-        url = "?".join([os.environ['ENDPOINT'], urlencode({"text": cipher})])
+        url = "?".join([os.environ["ENDPOINT"], urlencode({"text": cipher})])
         caption = "Woof! In order for your entry to be accepted into the group, please answer the captcha."  # noqa
 
         response = await message.reply_photo(url, caption=caption)
