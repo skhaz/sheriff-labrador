@@ -203,6 +203,7 @@ def equals(left, right):
 
 
 def telegram(event: APIGatewayProxyEventV1, context: Context):
+    print("event", event["headers"])
     if not equals(
         event["headers"].get("X-Telegram-Bot-Api-Secret-Token"),
         os.environ["SECRET"],
