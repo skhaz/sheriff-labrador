@@ -192,17 +192,17 @@ async def main(event: APIGatewayProxyEventV1):
 
 
 def equals(left, right):
-    try:
-        if len(left) != len(right):
+    if not left or not right:
+        return False
+
+    if len(left) != len(right):
+        return False
+
+    for c1, c2 in zip(left, right):
+        if c1 != c2:
             return False
 
-        for c1, c2 in zip(left, right):
-            if c1 != c2:
-                return False
-
-        return True
-    except:  # noqa
-        return False
+    return True
 
 
 def telegram(event: APIGatewayProxyEventV1, context: Context):
