@@ -80,6 +80,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           REDIS_DSN: ${{ secrets.REDIS_DSN }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          SECRET: ${{ secrets.SECRET }}
 
       - name: Set Webhook
         run: |
