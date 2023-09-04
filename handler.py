@@ -24,7 +24,6 @@ from telegram.ext import filters
 
 class APIGatewayProxyEventV1(TypedDict):
     headers: Dict[str, str]
-
     body: Optional[str]
 
 
