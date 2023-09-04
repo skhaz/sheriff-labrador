@@ -18,10 +18,6 @@ functions:
       - http:
           path: /webhook
           method: post
-          authorizer:
-            name: authorizer
-            identitySource: method.request.header.x-telegram-bot-api-secret-token
-            identityValidationExpression: ${env:SECRET}
     environment:
       ENDPOINT: !GetAtt HttpApi.ApiEndpoint
       REDIS_DSN: ${env:REDIS_DSN}
@@ -31,7 +27,7 @@ functions:
     runtime: provided.al2
     handler: bootstrap
     events:
-      - httpApi:
+      - http:
           path: /
           method: get
 plugins:
