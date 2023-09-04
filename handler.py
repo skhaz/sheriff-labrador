@@ -192,20 +192,23 @@ async def main(event: APIGatewayProxyEventV1):
 
 
 def equals(left, right):
-    if len(left) != len(right):
-        return False
-
-    for c1, c2 in zip(left, right):
-        if c1 != c2:
+    try:
+        if len(left) != len(right):
             return False
 
-    return True
+        for c1, c2 in zip(left, right):
+            if c1 != c2:
+                return False
+
+        return True
+    except:
+        return False
 
 
 def telegram(event: APIGatewayProxyEventV1, context: Context):
     print("event", event["headers"])
     if not equals(
-        event["headers"].get("X-Telegram-Bot-Api-Secret-Token"),
+        event["headers"].get("x-telegram-bot-api-secret-token"),
         os.environ["SECRET"],
     ):
         return {
