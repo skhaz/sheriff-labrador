@@ -15,7 +15,7 @@ functions:
     runtime: python3.10
     handler: handler.telegram
     events:
-      - http:
+      - httpApi:
           path: /webhook
           method: post
     environment:
@@ -27,7 +27,7 @@ functions:
     runtime: provided.al2
     handler: bootstrap
     events:
-      - http:
+      - httpApi:
           path: /
           method: get
 plugins:
