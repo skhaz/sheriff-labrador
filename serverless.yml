@@ -19,6 +19,7 @@ functions:
           path: /webhook
           method: post
           authorizer:
+            name: authorizer
             identitySource: method.request.header.x-telegram-bot-api-secret-token
             identityValidationExpression: ${env:SECRET}
     environment:
