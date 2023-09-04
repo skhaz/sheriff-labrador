@@ -21,6 +21,7 @@ functions:
     environment:
       ENDPOINT: !GetAtt HttpApi.ApiEndpoint
       REDIS_DSN: ${env:REDIS_DSN}
+      SECRET: ${env:SECRET}
       TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
 
   captcha:
