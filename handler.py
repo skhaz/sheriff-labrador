@@ -201,7 +201,7 @@ def equals(left, right):
                 return False
 
         return True
-    except:
+    except:  # noqa
         return False
 
 
