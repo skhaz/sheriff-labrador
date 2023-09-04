@@ -15,7 +15,7 @@ functions:
     runtime: python3.10
     handler: handler.telegram
     events:
-      - httpApi:
+      - http:
           path: /webhook
           method: post
           authorizer:
