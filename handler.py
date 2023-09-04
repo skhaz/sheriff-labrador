@@ -6,6 +6,7 @@ import os
 import random
 import re
 import string
+from typing import Dict
 from typing import Optional
 from typing import TypedDict
 from urllib.parse import urlencode
@@ -22,6 +23,8 @@ from telegram.ext import filters
 
 
 class APIGatewayProxyEventV1(TypedDict):
+    headers: Dict[str, str]
+
     body: Optional[str]
 
 
@@ -188,7 +191,26 @@ async def main(event: APIGatewayProxyEventV1):
         )
 
 
+def equals(left, right):
+    if len(left) != len(right):
+        return False
+
+    for c1, c2 in zip(left, right):
+        if c1 != c2:
+            return False
+
+    return True
+
+
 def telegram(event: APIGatewayProxyEventV1, context: Context):
+    if not equals(
+        event["headers"]["X-Telegram-Bot-Api-Secret-Token"],
+        os.environ["SECRET"],
+    ):
+        return {
+            "statusCode": 401,
+        }
+
     asyncio.get_event_loop().run_until_complete(main(event))
 
     return {
