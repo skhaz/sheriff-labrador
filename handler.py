@@ -11,8 +11,6 @@ from typing import Optional
 from typing import TypedDict
 from urllib.parse import urlencode
 
-from asyncio_redis_rate_limit import RateLimiter
-from asyncio_redis_rate_limit import RateSpec
 from redis.asyncio import ConnectionPool
 from redis.asyncio import Redis
 from telegram import Update
@@ -64,17 +62,11 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
 
         text = f"Howl... I need to be an admin in order to work properly (privilege to delete messages).\n\n`{error.message}`"  # noqa
 
-        async with RateLimiter(
-            cache_prefix="error",
-            unique_key=f"{chat.id}",
-            backend=redis,
-            rate_spec=RateSpec(requests=1, seconds=60),
-        ):
-            await context.bot.send_message(
-                chat_id=chat.id,
-                text=text,
-                parse_mode=ParseMode.MARKDOWN_V2,
-            )
+        await context.bot.send_message(
+            chat_id=chat.id,
+            text=text,
+            parse_mode=ParseMode.MARKDOWN_V2,
+        )
 
 
 async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
