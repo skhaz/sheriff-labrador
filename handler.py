@@ -162,7 +162,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     await context.bot.send_message(
         message.chat_id,
-        "".join([mention, escape_markdown(", welcome to the group! Au!")]),
+        "".join([mention, escape_markdown(", welcome to the group! Au!", 2)]),
         parse_mode=ParseMode.MARKDOWN_V2,
     ),
 
