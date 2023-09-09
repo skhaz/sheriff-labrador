@@ -20,7 +20,6 @@ from telegram.ext import Application
 from telegram.ext import ContextTypes
 from telegram.ext import MessageHandler
 from telegram.ext import filters
-from telegram.helpers import escape_markdown
 
 
 class APIGatewayProxyEventV1(TypedDict):
