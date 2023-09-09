@@ -20,6 +20,7 @@ from telegram.ext import Application
 from telegram.ext import ContextTypes
 from telegram.ext import MessageHandler
 from telegram.ext import filters
+from telegram.helpers import escape_markdown
 
 
 class APIGatewayProxyEventV1(TypedDict):
@@ -62,11 +63,7 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
 
         text = f"Howl... I need to be an admin in order to work properly (privilege to delete messages).\n\n`{error.message}`"  # noqa
 
-        await context.bot.send_message(
-            chat_id=chat.id,
-            text=text,
-            parse_mode=ParseMode.MARKDOWN_V2,
-        )
+        await context.bot.send_message(chat_id=chat.id, text=text)
 
 
 async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -165,7 +162,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     await context.bot.send_message(
         message.chat_id,
-        rf"{mention}, welcome to the group! Au!",
+        "".join([mention, escape_markdown(", welcome to the group! Au!")]),
         parse_mode=ParseMode.MARKDOWN_V2,
     ),
 
