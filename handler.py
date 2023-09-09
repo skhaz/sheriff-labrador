@@ -67,7 +67,7 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
         if not chat:
             return
 
-        text = f"Howl... I need to be an admin in order to work properly (privilege to delete messages).\n\n`{message}`"  # noqa
+        text = f"Howl... I need to be an admin in order to work properly (privilege to delete messages)\.\n\n`{message}`"  # noqa
 
         await context.bot.send_message(
             chat_id=chat.id,
