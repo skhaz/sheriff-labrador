@@ -165,7 +165,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     await context.bot.send_message(
         message.chat_id,
-        f"{mention}, welcome to the group! Au!",
+        rf"{mention}, welcome to the group! Au!",
         parse_mode=ParseMode.MARKDOWN_V2,
     ),
 
