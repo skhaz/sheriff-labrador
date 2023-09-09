@@ -69,7 +69,11 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
 
         text = f"Howl... I need to be an admin in order to work properly (privilege to delete messages).\n\n`{message}`"  # noqa
 
-        await context.bot.send_message(chat_id=chat.id, text=text)
+        await context.bot.send_message(
+            chat_id=chat.id,
+            text=text,
+            parse_mode=ParseMode.MARKDOWN_V2,
+        )
 
 
 async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
