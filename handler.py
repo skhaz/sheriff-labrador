@@ -43,6 +43,8 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 
+ignore = re.compile("^Message to delete not found$")
+
 
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
     error = context.error
@@ -55,12 +57,17 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
         return
 
     if isinstance(error, BadRequest):
+        message = error.message
+
+        if ignore.match(message):
+            return
+
         chat = update.effective_chat
 
         if not chat:
             return
 
-        text = f"Howl... I need to be an admin in order to work properly (privilege to delete messages).\n\n`{error.message}`"  # noqa
+        text = f"Howl... I need to be an admin in order to work properly (privilege to delete messages).\n\n`{message}`"  # noqa
 
         await context.bot.send_message(chat_id=chat.id, text=text)
 
