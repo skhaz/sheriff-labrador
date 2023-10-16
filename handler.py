@@ -95,11 +95,13 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
         response = await message.reply_photo(url, caption=caption)
 
+        key = f"{message.chat_id}:{user.id}"
+
         pipe = redis.pipeline()
-        pipe.set(f"ciphers:{message.chat_id}:{user.id}", cipher)
-        pipe.set(f"messages:{message.chat_id}:{user.id}", response.id)
-        pipe.set(f"joins:{message.chat_id}:{user.id}", message.id)
-        pipe.zadd("z", f"{message.chat_id}:{user.id}", int(datetime.now().timestamp()))
+        pipe.set(f"ciphers:{key}", cipher)
+        pipe.set(f"messages:{key}", response.id)
+        pipe.set(f"joins:{key}:{user.id}", message.id)
+        pipe.zadd("z", {key: int(datetime.now().timestamp())})
         await pipe.execute()
 
 
