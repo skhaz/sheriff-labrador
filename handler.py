@@ -6,6 +6,7 @@ import os
 import random
 import re
 import string
+from datetime import datetime
 from typing import Dict
 from typing import Optional
 from typing import TypedDict
@@ -98,6 +99,7 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         pipe.set(f"ciphers:{message.chat_id}:{user.id}", cipher)
         pipe.set(f"messages:{message.chat_id}:{user.id}", response.id)
         pipe.set(f"joins:{message.chat_id}:{user.id}", message.id)
+        pipe.zadd("z", f"{message.chat_id}:{user.id}", int(datetime.now().timestamp()))
         await pipe.execute()
 
 
