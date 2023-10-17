@@ -10,7 +10,6 @@ from datetime import datetime
 from typing import Dict
 from typing import Optional
 from typing import TypedDict
-from typing import Protocol
 from urllib.parse import urlencode
 
 import aioboto3
