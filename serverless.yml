@@ -29,7 +29,7 @@ resources:
 functions:
   telegram:
     runtime: python3.10
-    handler: http.telegram
+    handler: handler.telegram
     events:
       - httpApi:
           path: /webhook
