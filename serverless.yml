@@ -12,7 +12,7 @@ provider:
 
 resources:
   Resources:
-    DYNAMODB_TABLE:
+    DynamoDBTable:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
