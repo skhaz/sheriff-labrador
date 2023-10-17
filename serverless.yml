@@ -15,6 +15,7 @@ resources:
     DynamoDBTable:
       Type: AWS::DynamoDB::Table
       Properties:
+        BillingMode: PAY_PER_REQUEST
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -23,12 +24,11 @@ resources:
         KeySchema:
           - AttributeName: id
             KeyType: HASH
-          - AttributeName: ttl
-            KeyType: RANGE
+          # - AttributeName: ttl
+          #   KeyType: RANGE
         TimeToLiveSpecification:
           AttributeName: ttl
           Enabled: true
-        BillingMode: PAY_PER_REQUEST
         StreamSpecification:
           StreamViewType: NEW_AND_OLD_IMAGES
 
