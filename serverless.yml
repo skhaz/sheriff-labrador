@@ -18,9 +18,13 @@ resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
+          - AttributeName: ttl
+            AttributeType: N
         KeySchema:
           - AttributeName: id
             KeyType: HASH
+          - AttributeName: ttl
+            KeyType: RANGE
         TimeToLiveSpecification:
           AttributeName: ttl
           Enabled: true
