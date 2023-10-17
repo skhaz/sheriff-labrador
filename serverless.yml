@@ -61,5 +61,5 @@ functions:
           path: /
           method: get
 plugins:
-  - serverless-python-requirements
   - serverless-iam-roles-per-function
+  - serverless-python-requirements
