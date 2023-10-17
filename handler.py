@@ -6,6 +6,7 @@ import os
 import random
 import re
 import string
+import json
 from datetime import datetime
 from typing import Dict
 from typing import Optional
@@ -247,3 +248,8 @@ def telegram(event: APIGatewayProxyEventV1, context: Context):
     return {
         "statusCode": 200,
     }
+
+
+def stream(*args, **kwargs):
+    print('>>> args', json.dumps(args))
+    print('>>> kwargs', json.dumps(kwargs))

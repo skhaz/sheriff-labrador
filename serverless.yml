@@ -53,6 +53,17 @@ functions:
       DYNAMODB_TABLE:
         Ref: DynamoDBTable
 
+  stream:
+    runtime: python3.10
+    handler: handler.stream
+    events:
+      - stream:
+          type: dynamodb
+          arn:
+            Fn::GetAtt: [DynamoDBTable, StreamArn]
+          filterPatterns:
+            - eventName: [REMOVE]
+
   captcha:
     runtime: provided.al2
     handler: bootstrap
