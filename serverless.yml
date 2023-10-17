@@ -10,10 +10,6 @@ provider:
   architecture: arm64
   stage: development
 
-
-plugins:
-  - serverless-iam-roles-per-function
-
 resources:
   Resources:
     DynamoDBTable:
@@ -64,3 +60,4 @@ functions:
           method: get
 plugins:
   - serverless-python-requirements
+  - serverless-iam-roles-per-function
