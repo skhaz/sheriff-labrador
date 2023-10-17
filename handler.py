@@ -10,6 +10,7 @@ from datetime import datetime
 from typing import Dict
 from typing import Optional
 from typing import TypedDict
+from typing import Protocol
 from urllib.parse import urlencode
 
 import aioboto3
@@ -249,6 +250,6 @@ def telegram(event: APIGatewayProxyEventV1, context: Context):
     }
 
 
-def stream(*args, **kwargs):
-    print(">>> args", json.dumps(args))
-    print(">>> kwargs", json.dumps(kwargs))
+# Object of type LambdaContext is not JSON serializable
+def stream(event, context: Context):
+    print(">>> event", json.dumps(event))
