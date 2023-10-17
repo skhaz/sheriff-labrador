@@ -12,8 +12,7 @@ from typing import Optional
 from typing import TypedDict
 from urllib.parse import urlencode
 
-from redis.asyncio import ConnectionPool
-from redis.asyncio import Redis
+import aioboto3
 from telegram import Update
 from telegram.constants import ParseMode
 from telegram.error import BadRequest
@@ -36,9 +35,7 @@ application = (
     Application.builder().token(os.environ["TELEGRAM_TOKEN"]).updater(None).build()
 )
 
-pool = ConnectionPool.from_url(os.environ["REDIS_DSN"])
-redis = Redis(connection_pool=pool)
-
+boto3 = aioboto3.Session()
 
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
@@ -82,27 +79,32 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not message:
         return
 
-    for user in message.new_chat_members:
-        if not user:
-            continue
+    async with boto3.resource("dynamodb") as dynamodb:
+        table = await dynamodb.Table(os.environ["DYNAMODB_TABLE"])
+        async with table.batch_writer() as batch:
+            for user in message.new_chat_members:
+                if not user:
+                    continue
 
-        if user.is_bot:
-            continue
+                if user.is_bot:
+                    continue
 
-        cipher = "".join(random.sample(string.ascii_uppercase, 4))
-        url = "?".join([os.environ["ENDPOINT"], urlencode({"text": cipher})])
-        caption = "Woof! In order for your entry to be accepted into the group, please answer the captcha."  # noqa
+                cipher = "".join(random.sample(string.ascii_uppercase, 4))
+                url = "?".join([os.environ["ENDPOINT"], urlencode({"text": cipher})])
+                caption = "Woof! In order for your entry to be accepted into the group, please answer the captcha."  # noqa
 
-        response = await message.reply_photo(url, caption=caption)
+                response = await message.reply_photo(url, caption=caption)
 
-        key = f"{message.chat_id}:{user.id}"
-
-        pipe = redis.pipeline()
-        pipe.set(f"ciphers:{key}", cipher)
-        pipe.set(f"messages:{key}", response.id)
-        pipe.set(f"joins:{key}:{user.id}", message.id)
-        pipe.zadd("z", {key: int(datetime.now().timestamp())})
-        await pipe.execute()
+                await batch.put_item(
+                    Item={
+                        "id": f"{message.chat_id}:{user.id}",
+                        "ttl": int(datetime.now().timestamp()) + 60**2,
+                        "cipher": cipher,
+                        "message_id": response.id,
+                        "join_id": message.id,
+                        "user_id": user.id,
+                    }
+                )
 
 
 async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -117,24 +119,27 @@ async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if user.is_bot:
         return
 
-    pipe = redis.pipeline()
-    pipe.get(f"messages:{message.chat_id}:{user.id}")
-    pipe.get(f"joins:{message.chat_id}:{user.id}")
-    pipe.delete(f"ciphers:{message.chat_id}:{user.id}")
-    pipe.delete(f"messages:{message.chat_id}:{user.id}")
-    pipe.delete(f"joins:{message.chat_id}:{user.id}")
+    key = {"id": f"{message.chat_id}:{user.id}"}
 
-    message_id, join_id, *_ = await pipe.execute()
+    async with boto3.resource("dynamodb") as dynamodb:
+        table = await dynamodb.Table(os.environ["DYNAMODB_TABLE"])
+        response = await table.get_item(Key=key)
 
-    await asyncio.gather(
-        context.bot.delete_message(
-            chat_id=message.chat_id, message_id=message_id.decode()
-        ),
-        context.bot.delete_message(
-            chat_id=message.chat_id, message_id=join_id.decode()
-        ),
-        message.delete(),
-    )
+        item = response.get("Item")
+
+        if not item:
+            return
+
+        await asyncio.gather(
+            context.bot.delete_message(
+                chat_id=message.chat_id, message_id=item["message_id"]
+            ),
+            context.bot.delete_message(
+                chat_id=message.chat_id, message_id=item["join_id"]
+            ),
+            message.delete(),
+            table.delete_item(Key=key),
+        )
 
 
 async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -146,39 +151,48 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     if not user:
         return
 
-    cipher = await redis.get(f"ciphers:{message.chat_id}:{user.id}")
+    key = {"id": f"{message.chat_id}:{user.id}"}
 
-    if not cipher:
-        return
+    async with boto3.resource("dynamodb") as dynamodb:
+        table = await dynamodb.Table(os.environ["DYNAMODB_TABLE"])
+        response = await table.get_item(Key=key)
 
-    text = message.text
+        item = response.get("Item")
 
-    if not text or cipher.decode() != re.sub(r"\s+", "", text).upper():
-        await message.delete()
-        return
+        if not item:
+            return
 
-    message_id = await redis.get(f"messages:{message.chat_id}:{user.id}")
+        cipher = item.get("cipher")
 
-    await asyncio.gather(
-        context.bot.delete_message(
-            chat_id=message.chat_id,
-            message_id=message_id.decode(),
+        if not cipher:
+            return
+
+        text = message.text
+
+        if not text or cipher != re.sub(r"\s+", "", text).upper():
+            await message.delete()
+            return
+
+        await asyncio.gather(
+            context.bot.delete_message(
+                chat_id=message.chat_id,
+                message_id=item["message_id"],
+            ),
+            table.delete_item(Key=key),
+            message.delete(),
+        )
+
+        user = message.from_user
+        if not user:
+            return
+
+        mention = f"[{user.username}](tg://user?id={user.id})"
+
+        await context.bot.send_message(
+            message.chat_id,
+            f"{mention}, welcome to the group\! Au\!",
+            parse_mode=ParseMode.MARKDOWN_V2,
         ),
-        redis.delete(f"ciphers:{message.chat_id}:{user.id}"),
-        message.delete(),
-    )
-
-    user = message.from_user
-    if not user:
-        return
-
-    mention = f"[{user.username}](tg://user?id={user.id})"
-
-    await context.bot.send_message(
-        message.chat_id,
-        f"{mention}, welcome to the group\! Au\!",
-        parse_mode=ParseMode.MARKDOWN_V2,
-    ),
 
 
 application.add_error_handler(error_handler)

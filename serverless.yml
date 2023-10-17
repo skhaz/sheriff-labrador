@@ -10,10 +10,26 @@ provider:
   architecture: arm64
   stage: development
 
+resources:
+  Resources:
+    DYNAMODB_TABLE:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
+        BillingMode: PAY_PER_REQUEST
+
 functions:
   telegram:
     runtime: python3.10
-    handler: handler.telegram
+    handler: http.telegram
     events:
       - httpApi:
           path: /webhook
@@ -23,6 +39,8 @@ functions:
       REDIS_DSN: ${env:REDIS_DSN}
       SECRET: ${env:SECRET}
       TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
+      DYNAMODB_TABLE:
+        Ref: DynamoDBTable
 
   captcha:
     runtime: provided.al2
