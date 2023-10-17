@@ -43,6 +43,8 @@ functions:
           - dynamodb:GetItem
           - dynamodb:PutItem
           - dynamodb:DeleteItem
+        Resource:
+          - Fn::GetAtt: [DynamoDBTable, Arn]
     environment:
       ENDPOINT: !GetAtt HttpApi.ApiEndpoint
       REDIS_DSN: ${env:REDIS_DSN}
