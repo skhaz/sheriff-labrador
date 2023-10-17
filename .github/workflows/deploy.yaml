@@ -74,7 +74,7 @@ jobs:
           node-version: "20"
 
       - name: Install Serverless Framework
-        run: npm install -g serverless serverless-python-requirements
+        run: npm install -g serverless serverless-python-requirements serverless-iam-roles-per-function
 
       - name: Deploy
         run: serverless deploy
