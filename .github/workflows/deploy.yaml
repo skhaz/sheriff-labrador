@@ -22,7 +22,10 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Install Tools
-        run: pip install black mypy ruff
+        run: pip install black mypy ruff types-aioboto3
+
+      - name: Install Types
+        run: pip install types-aioboto3
 
       - name: Lint Python
         run: |
