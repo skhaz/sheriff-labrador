@@ -274,4 +274,4 @@ def stream(event, context: Context):
             ]
         )
 
-    loop.run_until_complete(asyncio.gather(tuple(promises)))
+    loop.run_until_complete(asyncio.gather(*promises))
