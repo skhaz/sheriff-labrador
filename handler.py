@@ -100,9 +100,9 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                         "id": f"{message.chat_id}:{user.id}",
                         "ttl": int(datetime.now().timestamp()) + 30,  # 60**2,
                         "cipher": cipher,
-                        "message_id": response.id,
-                        "join_id": message.id,
-                        "user_id": user.id,
+                        "message_id": str(response.id),
+                        "join_id": str(message.id),
+                        "user_id": str(user.id),
                     }
                 )
 
@@ -127,7 +127,6 @@ async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
         item = response.get("Item")
 
-        print(">>> item", item)
         if not item:
             return
 
@@ -160,7 +159,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
         item = response.get("Item")
 
-        print(">>> item", item)
         if not item:
             return
 
