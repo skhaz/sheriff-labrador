@@ -255,7 +255,7 @@ def stream(event, context: Context):
     bot = application.bot
     loop = asyncio.get_event_loop()
 
-    print('>>> event', json.dumps(event))
+    print(">>> event", json.dumps(event))
 
     for record in event["Records"]:
         item = record["dynamodb"]["OldImage"]
