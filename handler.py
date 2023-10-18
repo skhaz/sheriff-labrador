@@ -256,23 +256,18 @@ def stream(event, context: Context):
     loop = asyncio.get_event_loop()
 
     for record in event["Records"]:
-        if (
-            "userIdentity" in record
-            and record["userIdentity"]["type"] == "Service"
-            and record["userIdentity"]["principalId"] == "dynamodb.amazonaws.com"
-        ):
-            item = record["dynamodb"]["OldImage"]
-            promises.extend(
-                [
-                    bot.delete_message(
-                        chat_id=item["chat_id"]["S"],
-                        message_id=item["message_id"]["S"],
-                    ),
-                    bot.unban_chat_member(
-                        chat_id=item["chat_id"]["S"],
-                        user_id=item["user_id"]["S"],
-                    ),
-                ]
-            )
+        item = record["dynamodb"]["OldImage"]
+        promises.extend(
+            [
+                bot.delete_message(
+                    chat_id=item["chat_id"]["S"],
+                    message_id=item["message_id"]["S"],
+                ),
+                bot.unban_chat_member(
+                    chat_id=item["chat_id"]["S"],
+                    user_id=item["user_id"]["S"],
+                ),
+            ]
+        )
 
     loop.run_until_complete(asyncio.gather(*promises))
