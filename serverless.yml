@@ -19,8 +19,8 @@ resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
-          - AttributeName: ttl
-            AttributeType: N
+          # - AttributeName: ttl
+          #   AttributeType: N
         KeySchema:
           - AttributeName: id
             KeyType: HASH
