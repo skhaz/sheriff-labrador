@@ -125,9 +125,7 @@ async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     async with boto3.resource("dynamodb") as dynamodb:
         table = await dynamodb.Table(os.environ["DYNAMODB_TABLE"])
         response = await table.get_item(Key=key)
-
         item = response.get("Item")
-
         if not item:
             return
 
