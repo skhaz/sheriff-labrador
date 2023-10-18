@@ -100,6 +100,7 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                         "id": f"{message.chat_id}:{user.id}",
                         "ttl": int(datetime.now().timestamp()) + 30,  # 60**2,
                         "cipher": cipher,
+                        "chat_id": str(message.chat_id),
                         "message_id": str(response.id),
                         "join_id": str(message.id),
                         "user_id": str(user.id),
@@ -249,6 +250,28 @@ def telegram(event: APIGatewayProxyEventV1, context: Context):
     }
 
 
-# Object of type LambdaContext is not JSON serializable
 def stream(event, context: Context):
-    print(">>> event", json.dumps(event["Records"]))
+    promises = []
+    bot = application.bot
+    loop = asyncio.get_event_loop()
+
+    for record in event["Records"]:
+        item = record["dynamodb"]["OldImage"]
+        promises.extend(
+            [
+                bot.delete_message(
+                    chat_id=item["chat_id"]["S"],
+                    message_id=item["message_id"]["S"],
+                ),
+                bot.unban_chat_member(
+                    chat_id=item["chat_id"]["S"],
+                    user_id=item["user_id"]["S"],
+                ),
+                bot.delete_message(
+                    chat_id=item["chat_id"]["S"],
+                    message_id=item["join_id"],
+                ),
+            ]
+        )
+
+    loop.run_until_complete(asyncio.gather(tuple(promises)))
