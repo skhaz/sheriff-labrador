@@ -269,7 +269,7 @@ def stream(event, context: Context):
                 ),
                 bot.delete_message(
                     chat_id=item["chat_id"]["S"],
-                    message_id=item["join_id"],
+                    message_id=item["join_id"]["S"],
                 ),
             ]
         )
