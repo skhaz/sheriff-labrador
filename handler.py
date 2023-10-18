@@ -214,6 +214,8 @@ async def main(event: APIGatewayProxyEventV1):
     if not body:
         return
 
+    print(">>> body", body)
+
     async with application:
         await application.process_update(
             Update.de_json(json.loads(body), application.bot)
