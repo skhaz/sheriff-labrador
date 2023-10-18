@@ -19,13 +19,13 @@ resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
-          # - AttributeName: ttl
-          #   AttributeType: N
+          - AttributeName: ttl
+            AttributeType: N
         KeySchema:
           - AttributeName: id
             KeyType: HASH
-          # - AttributeName: ttl
-          #   KeyType: RANGE
+          - AttributeName: ttl
+            KeyType: RANGE
         TimeToLiveSpecification:
           AttributeName: ttl
           Enabled: true
@@ -68,7 +68,10 @@ functions:
           arn:
             Fn::GetAtt: [DynamoDBTable, StreamArn]
           filterPatterns:
-            - eventName: [REMOVE]
+            {
+              $.eventName = "REMOVE" && $.userEntity.type = "Service" && $.userIdentity.principalId = "dynamodb.amazonaws.com",
+            }
+
     environment:
       #ENDPOINT: !GetAtt HttpApi.ApiEndpoint
       #REDIS_DSN: ${env:REDIS_DSN}

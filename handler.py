@@ -214,8 +214,6 @@ async def main(event: APIGatewayProxyEventV1):
     if not body:
         return
 
-    print(">>> body", body)
-
     async with application:
         await application.process_update(
             Update.de_json(json.loads(body), application.bot)
@@ -257,25 +255,24 @@ def stream(event, context: Context):
     bot = application.bot
     loop = asyncio.get_event_loop()
 
-    print(">>> event", json.dumps(event))
-
     for record in event["Records"]:
-        item = record["dynamodb"]["OldImage"]
-        promises.extend(
-            [
-                bot.delete_message(
-                    chat_id=item["chat_id"]["S"],
-                    message_id=item["message_id"]["S"],
-                ),
-                bot.unban_chat_member(
-                    chat_id=item["chat_id"]["S"],
-                    user_id=item["user_id"]["S"],
-                ),
-                bot.delete_message(
-                    chat_id=item["chat_id"]["S"],
-                    message_id=item["join_id"]["S"],
-                ),
-            ]
-        )
+        if (
+            "userIdentity" in record
+            and record["userIdentity"]["type"] == "Service"
+            and record["userIdentity"]["principalId"] == "dynamodb.amazonaws.com"
+        ):
+            item = record["dynamodb"]["OldImage"]
+            promises.extend(
+                [
+                    bot.delete_message(
+                        chat_id=item["chat_id"]["S"],
+                        message_id=item["message_id"]["S"],
+                    ),
+                    bot.unban_chat_member(
+                        chat_id=item["chat_id"]["S"],
+                        user_id=item["user_id"]["S"],
+                    ),
+                ]
+            )
 
     loop.run_until_complete(asyncio.gather(*promises))
