@@ -155,23 +155,18 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     key = {"id": f"{message.chat_id}:{user.id}"}
 
     async with boto3.resource("dynamodb") as dynamodb:
-        print("dynamodb", os.environ["DYNAMODB_TABLE"])
         table = await dynamodb.Table(os.environ["DYNAMODB_TABLE"])
-        print("table", table)
         response = await table.get_item(Key=key)
 
         item = response.get("Item")
-
         if not item:
             return
 
         cipher = item.get("cipher")
-
         if not cipher:
             return
 
         text = message.text
-
         if not text or cipher != re.sub(r"\s+", "", text).upper():
             await message.delete()
             return
