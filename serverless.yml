@@ -65,12 +65,9 @@ functions:
     events:
       - stream:
           type: dynamodb
+          filterPattern: '{$.eventName = "REMOVE" && $.userEntity.type = "Service" && $.userIdentity.principalId = "dynamodb.amazonaws.com"}'
           arn:
             Fn::GetAtt: [DynamoDBTable, StreamArn]
-          filterPatterns:
-            - {
-                $.eventName = "REMOVE" && $.userEntity.type = "Service" && $.userIdentity.principalId = "dynamodb.amazonaws.com",
-              }
 
     environment:
       #ENDPOINT: !GetAtt HttpApi.ApiEndpoint
