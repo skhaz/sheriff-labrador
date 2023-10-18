@@ -154,10 +154,10 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     key = {"id": f"{message.chat_id}:{user.id}"}
 
-    print(">>> on_message key", key)
-
     async with boto3.resource("dynamodb") as dynamodb:
+        print("dynamodb", os.environ["DYNAMODB_TABLE"])
         table = await dynamodb.Table(os.environ["DYNAMODB_TABLE"])
+        print("table", table)
         response = await table.get_item(Key=key)
 
         item = response.get("Item")
