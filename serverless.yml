@@ -65,7 +65,11 @@ functions:
     events:
       - stream:
           type: dynamodb
-          filterPattern: '{$.eventName = "REMOVE" && $.userEntity.type = "Service" && $.userIdentity.principalId = "dynamodb.amazonaws.com"}'
+          filterPatterns:
+            - eventName: [REMOVE]
+              userIdentity:
+                type: [Service]
+                principalId: [dynamodb.amazonaws.com]
           arn:
             Fn::GetAtt: [DynamoDBTable, StreamArn]
 
