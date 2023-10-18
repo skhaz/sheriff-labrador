@@ -98,7 +98,7 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 await batch.put_item(
                     Item={
                         "id": f"{message.chat_id}:{user.id}",
-                        "ttl": int(datetime.now().timestamp()) + 30, #+ 60**2,
+                        "ttl": int(datetime.now().timestamp()) + 30,  # + 60**2,
                         "cipher": cipher,
                         "chat_id": str(message.chat_id),
                         "message_id": str(response.id),
