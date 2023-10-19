@@ -251,16 +251,16 @@ def stream(event, context: Context):
     loop = asyncio.get_event_loop()
 
     for record in event["Records"]:
-        item = record["dynamodb"]["OldImage"]
+        image = record["dynamodb"]["OldImage"]
         promises.extend(
             [
                 bot.delete_message(
-                    chat_id=item["chat_id"]["S"],
-                    message_id=item["message_id"]["S"],
+                    chat_id=image["chat_id"]["S"],
+                    message_id=image["message_id"]["S"],
                 ),
                 bot.unban_chat_member(
-                    chat_id=item["chat_id"]["S"],
-                    user_id=item["user_id"]["S"],
+                    chat_id=image["chat_id"]["S"],
+                    user_id=image["user_id"]["S"],
                 ),
             ]
         )
