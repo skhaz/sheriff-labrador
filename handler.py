@@ -174,6 +174,10 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
                 chat_id=message.chat_id,
                 message_id=item["message_id"],
             ),
+            context.bot.delete_message(
+                chat_id=message.chat_id,
+                message_id=item["join_id"],
+            ),
             table.delete_item(Key=key),
             message.delete(),
         )
@@ -261,6 +265,10 @@ def stream(event, context: Context):
                 bot.unban_chat_member(
                     chat_id=image["chat_id"]["S"],
                     user_id=image["user_id"]["S"],
+                ),
+                bot.delete_message(
+                    chat_id=image["chat_id"]["S"],
+                    message_id=image["join_id"]["S"],
                 ),
             ]
         )
