@@ -65,6 +65,8 @@ functions:
                 principalId: [dynamodb.amazonaws.com]
           arn:
             Fn::GetAtt: [DynamoDBTable, StreamArn]
+    environment:
+      TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
 
   captcha:
     runtime: provided.al2
