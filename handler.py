@@ -32,7 +32,10 @@ class Context(metaclass=abc.ABCMeta):
 
 
 application = (
-    Application.builder().token(os.environ.get("TELEGRAM_TOKEN")).updater(None).build()
+    Application.builder()
+    .token(os.environ.get("TELEGRAM_TOKEN", ""))
+    .updater(None)
+    .build()
 )
 
 boto3 = aioboto3.Session()
