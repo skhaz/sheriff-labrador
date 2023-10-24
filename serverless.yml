@@ -40,8 +40,6 @@ functions:
       - Effect: Allow
         Action:
           - dynamodb:BatchWriteItem
-          - dynamodb:Query
-          - dynamodb:Scan
           - dynamodb:GetItem
           - dynamodb:PutItem
           - dynamodb:DeleteItem
@@ -49,7 +47,6 @@ functions:
           - Fn::GetAtt: [DynamoDBTable, Arn]
     environment:
       ENDPOINT: !GetAtt HttpApi.ApiEndpoint
-      #REDIS_DSN: ${env:REDIS_DSN}
       SECRET: ${env:SECRET}
       TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
       DYNAMODB_TABLE:
@@ -68,14 +65,6 @@ functions:
                 principalId: [dynamodb.amazonaws.com]
           arn:
             Fn::GetAtt: [DynamoDBTable, StreamArn]
-
-    environment:
-      #ENDPOINT: !GetAtt HttpApi.ApiEndpoint
-      #REDIS_DSN: ${env:REDIS_DSN}
-      #SECRET: ${env:SECRET}
-      TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
-      DYNAMODB_TABLE:
-        Ref: DynamoDBTable
 
   captcha:
     runtime: provided.al2
