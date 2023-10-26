@@ -132,16 +132,14 @@ async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         if not item:
             return
 
-        await asyncio.gather(
-            context.bot.delete_message(
-                chat_id=message.chat_id, message_id=item["message_id"]
-            ),
-            context.bot.delete_message(
-                chat_id=message.chat_id, message_id=item["join_id"]
-            ),
-            message.delete(),
-            table.delete_item(Key=key),
-        )
+    await asyncio.gather(
+        context.bot.delete_message(
+            chat_id=message.chat_id, message_id=item["message_id"]
+        ),
+        context.bot.delete_message(chat_id=message.chat_id, message_id=item["join_id"]),
+        message.delete(),
+        table.delete_item(Key=key),
+    )
 
 
 async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -158,44 +156,43 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     async with boto3.resource("dynamodb") as dynamodb:
         table = await dynamodb.Table(os.environ["DYNAMODB_TABLE"])
         response = await table.get_item(Key=key)
-
         item = response.get("Item")
         if not item:
             return
 
-        cipher = item.get("cipher")
-        if not cipher:
-            return
+    cipher = item.get("cipher")
+    if not cipher:
+        return
 
-        text = message.text
-        if not text or cipher != re.sub(r"\s+", "", text).upper():
-            await message.delete()
-            return
+    text = message.text
+    if not text or cipher != re.sub(r"\s+", "", text).upper():
+        await message.delete()
+        return
 
-        await asyncio.gather(
-            context.bot.delete_message(
-                chat_id=message.chat_id,
-                message_id=item["message_id"],
-            ),
-            context.bot.delete_message(
-                chat_id=message.chat_id,
-                message_id=item["join_id"],
-            ),
-            table.delete_item(Key=key),
-            message.delete(),
-        )
-
-        user = message.from_user
-        if not user:
-            return
-
-        mention = f"[{user.username}](tg://user?id={user.id})"
-
-        await context.bot.send_message(
-            message.chat_id,
-            f"{mention}, welcome to the group\! Au\!",
-            parse_mode=ParseMode.MARKDOWN_V2,
+    await asyncio.gather(
+        context.bot.delete_message(
+            chat_id=message.chat_id,
+            message_id=item["message_id"],
         ),
+        context.bot.delete_message(
+            chat_id=message.chat_id,
+            message_id=item["join_id"],
+        ),
+        table.delete_item(Key=key),
+        message.delete(),
+    )
+
+    user = message.from_user
+    if not user:
+        return
+
+    mention = f"[{user.username}](tg://user?id={user.id})"
+
+    await context.bot.send_message(
+        message.chat_id,
+        f"{mention}, welcome to the group\! Au\!",
+        parse_mode=ParseMode.MARKDOWN_V2,
+    )
 
 
 application.add_error_handler(error_handler)
