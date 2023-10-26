@@ -143,7 +143,6 @@ async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         ),
         message.delete(),
         table.delete_item(Key=key),
-        return_exceptions=True,
     )
 
 
@@ -185,7 +184,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         ),
         table.delete_item(Key=key),
         message.delete(),
-        return_exceptions=True,
     )
 
     user = message.from_user
