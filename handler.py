@@ -134,11 +134,16 @@ async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     await asyncio.gather(
         context.bot.delete_message(
-            chat_id=message.chat_id, message_id=item["message_id"]
+            chat_id=message.chat_id,
+            message_id=item["message_id"],
         ),
-        context.bot.delete_message(chat_id=message.chat_id, message_id=item["join_id"]),
+        context.bot.delete_message(
+            chat_id=message.chat_id,
+            message_id=item["join_id"],
+        ),
         message.delete(),
         table.delete_item(Key=key),
+        return_exceptions=True,
     )
 
 
@@ -180,6 +185,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         ),
         table.delete_item(Key=key),
         message.delete(),
+        return_exceptions=True,
     )
 
     user = message.from_user
