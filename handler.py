@@ -7,6 +7,7 @@ import random
 import re
 import string
 from datetime import datetime
+from typing import Any
 from typing import Dict
 from typing import Optional
 from typing import TypedDict
@@ -255,7 +256,7 @@ def telegram(event: APIGatewayProxyEventV1, context: Context):
     }
 
 
-def stream(event, context: Context):
+def stream(event: Dict[str, Any], context: Context):
     promises = []
     bot = application.bot
     loop = asyncio.get_event_loop()
