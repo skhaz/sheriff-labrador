@@ -60,12 +60,10 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
 
     if isinstance(error, BadRequest):
         message = error.message
-
         if ignore.match(message):
             return
 
         chat = update.effective_chat
-
         if not chat:
             return
 
