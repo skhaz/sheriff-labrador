@@ -106,6 +106,7 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                         "message_id": str(response.id),
                         "join_id": str(message.id),
                         "user_id": str(user.id),
+                        "attempts": 0,
                     }
                 )
 
