@@ -106,7 +106,6 @@ async def on_enter(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                         "message_id": str(response.id),
                         "join_id": str(message.id),
                         "user_id": str(user.id),
-                        "attempts": 0,
                     }
                 )
 
@@ -177,7 +176,8 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
                 message.delete(),
                 table.update_item(
                     Key=key,
-                    UpdateExpression="SET attempts = 0",
+                    UpdateExpression="SET attempts = :zero",
+                    ExpressionAttributeValues={":zero": 0},
                 ),
                 context.bot.send_message(
                     message.chat_id,
@@ -197,8 +197,8 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
                 message.delete(),
                 table.update_item(
                     Key=key,
-                    UpdateExpression="SET attempts = attempts + :inc",
-                    ExpressionAttributeValues={":inc": 1},
+                    UpdateExpression="SET attempts = if_not_exists(attempts, :start) + :inc",  # noqa
+                    ExpressionAttributeValues={":start": 0, ":inc": 1},
                 ),
             )
             return
