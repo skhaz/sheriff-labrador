@@ -164,13 +164,28 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         if not item:
             return
 
+        counter = item.get("counter", 0)
+        if counter >= 3:
+            await context.bot.send_message(
+                message.chat_id,
+                f"Animal de tetas, {user.username} has been banned\!",
+                parse_mode=ParseMode.MARKDOWN_V2,
+            )
+
         cipher = item.get("cipher")
         if not cipher:
             return
 
         text = message.text
         if not text or cipher != re.sub(r"\s+", "", text).upper():
-            await message.delete()
+            await asyncio.gather(
+                message.delete(),
+                table.update_item(
+                    Key=key,
+                    UpdateExpression="SET counter = counter + :inc",
+                    ExpressionAttributeValues={":inc": 1},
+                ),
+            )
             return
 
         await asyncio.gather(
