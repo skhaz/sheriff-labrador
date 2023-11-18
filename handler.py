@@ -170,13 +170,13 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
         mention = f"[{user.username}](tg://user?id={user.id})"
 
-        counter = item.get("counter", 0)
+        counter = item.get("attempts", 0)
         if counter >= 3:
             await asyncio.gather(
                 message.delete(),
                 table.update_item(
                     Key=key,
-                    UpdateExpression="SET counter = 0",
+                    UpdateExpression="SET attempts = 0",
                 ),
                 context.bot.send_message(
                     message.chat_id,
@@ -196,7 +196,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
                 message.delete(),
                 table.update_item(
                     Key=key,
-                    UpdateExpression="SET counter = counter + :inc",
+                    UpdateExpression="SET attempts = attempts + :inc",
                     ExpressionAttributeValues={":inc": 1},
                 ),
             )
