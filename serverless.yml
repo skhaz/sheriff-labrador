@@ -42,6 +42,7 @@ functions:
           - dynamodb:BatchWriteItem
           - dynamodb:GetItem
           - dynamodb:PutItem
+          - dynamodb:UpdateItem
           - dynamodb:DeleteItem
         Resource:
           - Fn::GetAtt: [DynamoDBTable, Arn]
