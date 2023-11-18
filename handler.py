@@ -181,7 +181,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
                 ),
                 context.bot.send_message(
                     message.chat_id,
-                    f"{mention}, you milk-fed beast, can not you read\? Learn to read\! Woof",  # noqa
+                    f"{mention}, you milk-fed beast, can not you read\? Answer the captcha\! Woof",  # noqa
                     parse_mode=ParseMode.MARKDOWN_V2,
                 ),
             )
