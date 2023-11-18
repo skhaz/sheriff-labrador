@@ -171,6 +171,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
                 f"Animal de tetas, {user.username} has been banned\!",
                 parse_mode=ParseMode.MARKDOWN_V2,
             )
+            return
 
         cipher = item.get("cipher")
         if not cipher:
