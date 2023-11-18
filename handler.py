@@ -164,12 +164,25 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
         if not item:
             return
 
+        user = message.from_user
+        if not user:
+            return
+
+        mention = f"[{user.username}](tg://user?id={user.id})"
+
         counter = item.get("counter", 0)
         if counter >= 3:
-            await context.bot.send_message(
-                message.chat_id,
-                f"Animal de tetas, {user.username} has been banned\!",
-                parse_mode=ParseMode.MARKDOWN_V2,
+            await asyncio.gather(
+                message.delete(),
+                table.update_item(
+                    Key=key,
+                    UpdateExpression="SET counter = 0",
+                ),
+                context.bot.send_message(
+                    message.chat_id,
+                    f"{mention}, you milk-fed beast, can not you read\? Learn to read\! Woof",  # noqa
+                    parse_mode=ParseMode.MARKDOWN_V2,
+                ),
             )
             return
 
@@ -202,12 +215,6 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
             message.delete(),
             return_exceptions=True,
         )
-
-        user = message.from_user
-        if not user:
-            return
-
-        mention = f"[{user.username}](tg://user?id={user.id})"
 
         await context.bot.send_message(
             message.chat_id,
