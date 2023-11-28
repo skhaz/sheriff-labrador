@@ -126,7 +126,7 @@ async def on_leave(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     async with boto3.resource("dynamodb") as dynamodb:
         table = await dynamodb.Table(os.environ["DYNAMODB_TABLE"])
-        response = await table.get_item(Key=key)
+        response = await table.get_item(Key=key, ConsistentRead=True)
         item = response.get("Item")
         if not item:
             return
@@ -159,7 +159,7 @@ async def on_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
     async with boto3.resource("dynamodb") as dynamodb:
         table = await dynamodb.Table(os.environ["DYNAMODB_TABLE"])
-        response = await table.get_item(Key=key)
+        response = await table.get_item(Key=key, ConsistentRead=True)
         item = response.get("Item")
         if not item:
             return
