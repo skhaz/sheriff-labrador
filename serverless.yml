@@ -30,7 +30,7 @@ resources:
 
 functions:
   telegram:
-    runtime: python3.10
+    runtime: python3.12
     handler: handler.telegram
     events:
       - httpApi:
@@ -54,7 +54,7 @@ functions:
         Ref: DynamoDBTable
 
   stream:
-    runtime: python3.10
+    runtime: python3.12
     handler: handler.stream
     events:
       - stream:
